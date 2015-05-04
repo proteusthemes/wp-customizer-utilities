@@ -19,16 +19,8 @@ class WP_Customize_Gradient_Control extends WP_Customize_Control {
 	// Render the gradient control
 	public function render_content() {
 		$values = $this->value();
-		$values = explode( ', ', $values );
 
 		$default_values = $this->setting->default;
-		$default_values = explode( ', ', $default_values );
-		/* values and default_values documentation
-		 * $values[0] -> First color (@string hex)
-		 * $values[1] -> Second color (@string hex)
-		 * $values[2] -> Gradient ( @string true/false)
-		 * $values[3] -> Gradient angle (@string number from 0 to 180)
-		 */
 
 	?>
 		<label>
@@ -41,12 +33,12 @@ class WP_Customize_Gradient_Control extends WP_Customize_Control {
 		</label>
 
 		<!-- First color picker -->
-		<input type="text" id="first-color-<?php echo esc_attr( $this->id ); ?>" class="gradient-color-picker" value="<?php echo esc_attr( $values[0] ); ?>" data-default-color="<?php echo esc_attr( $default_values[0] ); ?>" />
+		<input type="text" id="first-color-<?php echo esc_attr( $this->id ); ?>" class="gradient-color-picker" value="<?php echo esc_attr( $values['start_color'] ); ?>" data-default-color="<?php echo esc_attr( $default_values['start_color'] ); ?>" />
 
 		<!-- Wrap the second color picker with a span so we can hide it -->
 		<span class="hide-non-gradient-<?php echo esc_attr( $this->id ); ?>">
 			<!-- Second color picker (optional) -->
-			<input type="text" id="second-color-<?php echo esc_attr( $this->id ); ?>" class="gradient-color-picker" value="<?php echo esc_attr( $values[1] ); ?>" data-default-color="<?php echo esc_attr( $default_values[1] ); ?>" />
+			<input type="text" id="second-color-<?php echo esc_attr( $this->id ); ?>" class="gradient-color-picker" value="<?php echo esc_attr( $values['stop_color'] ); ?>" data-default-color="<?php echo esc_attr( $default_values['stop_color'] ); ?>" />
 		</span>
 
 		<p class="hide-non-gradient-<?php echo esc_attr( $this->id ); ?>">
@@ -54,7 +46,7 @@ class WP_Customize_Gradient_Control extends WP_Customize_Control {
 				<?php _e( 'Gradient angle: ', 'cargopress-pt' ) ?>
 				<div class="hide-non-gradient-<?php echo esc_attr( $this->id ); ?>" style="text-align: center;">
 					<!-- Range control for gradient angle -->
-					<input type="range" id="range-<?php echo esc_attr( $this->id ); ?>"  value="<?php echo esc_attr( $values[3] ); ?>" min="0" max="180" step="15" />
+					<input type="range" id="range-<?php echo esc_attr( $this->id ); ?>"  value="<?php echo esc_attr( $values['gradient_angle'] ); ?>" min="0" max="180" step="15" />
 				</div>
 			</label>
 		</p>
@@ -63,7 +55,7 @@ class WP_Customize_Gradient_Control extends WP_Customize_Control {
 			<label>
 				<?php _e( 'Use gradient: ', 'cargopress-pt' ) ?>
 				<!-- Checkbox for enable/disable gradient or single color control -->
-				<input type="checkbox" id="gradient-color-picker-checkbox-<?php echo esc_attr( $this->id ); ?>" <?php checked( esc_attr( $values[2] ), 'true' ); ?> />
+				<input type="checkbox" id="gradient-checkbox-<?php echo esc_attr( $this->id ); ?>" <?php checked( $values['is_gradient'] ); ?> />
 			</label>
 		</p>
 
@@ -72,45 +64,55 @@ class WP_Customize_Gradient_Control extends WP_Customize_Control {
 				'use strict';
 
 				/************ On Load Events ************/
+
+				// Get the starting values from PHP
+				var values = <?php echo wp_json_encode( $values ); ?>;
+
 				// Display or hide the gradient controls (second color and the range control)
-				$( '.hide-non-gradient-<?php echo esc_attr( $this->id ); ?>' ).toggle( 'true' === "<?php echo $values[2] ?>" );
+				$( '.hide-non-gradient-<?php echo esc_attr( $this->id ); ?>' ).toggle( values['is_gradient'] );
+
+				/********* END: On Load Events **********/
 
 				// Saving settings for customizer via JS wp.customize
-				var saveSettings = function( val ) {
+				var setSettings = function( val ) {
 					wp.customize( '<?php echo esc_js( $this->id ); ?>', function( obj ) {
+						// Reset the setting value, so that the change is triggered
+						obj.set( '' );
+						// Set the right value
 						obj.set( val );
+						// Refresh the preview to apply the gradient control changes
+						obj.previewer.refresh();
 					} );
 				};
 
 				// Convert input fields to color pickers
 				$('.gradient-color-picker').wpColorPicker( {
 					// A callback to fire whenever the color changes to a valid color
-					change: function(event, ui){
-						var currentValues;
-
+					change: function( event, ui ){
 						switch( event.target.id ) {
 							case 'first-color-<?php echo esc_attr( $this->id ); ?>':
-								currentValues = ui.color.toString() + ', ' + $( '#second-color-<?php echo esc_attr( $this->id ); ?>' ).val() + ', ' + $( '#gradient-color-picker-checkbox-<?php echo esc_attr( $this->id ); ?>' ).prop('checked') + ', ' + $('#range-<?php echo esc_attr( $this->id ); ?>').val();
+								values['start_color'] = ui.color.toString();
 								break;
 							case 'second-color-<?php echo esc_attr( $this->id ); ?>':
-								currentValues = $( '#first-color-<?php echo esc_attr( $this->id ); ?>' ).val() + ', ' + ui.color.toString() + ', ' + $( '#gradient-color-picker-checkbox-<?php echo esc_attr( $this->id ); ?>' ).prop('checked') + ', ' + $('#range-<?php echo esc_attr( $this->id ); ?>').val();
+								values['stop_color'] = ui.color.toString();
 								break;
 						}
-
-						saveSettings( currentValues );
+						// Set customizer settings with new colors
+						setSettings( values );
 					},
 				} );
 
-				// Display/hide and save gradient controls on checkbox click
-				$('#gradient-color-picker-checkbox-<?php echo esc_attr( $this->id ); ?>').click(function (e) {
-					$(".hide-non-gradient-<?php echo esc_attr( $this->id ); ?>").toggle(this.checked);
-
-					saveSettings( $( '#first-color-<?php echo esc_attr( $this->id ); ?>' ).val() + ', ' + $( '#second-color-<?php echo esc_attr( $this->id ); ?>' ).val() + ', ' + this.checked + ', ' + $('#range-<?php echo esc_attr( $this->id ); ?>').val() );
+				// Display/hide and set gradient controls on checkbox click
+				$( '#gradient-checkbox-<?php echo esc_attr( $this->id ); ?>' ).click( function( event ) {
+					values['is_gradient'] = this.checked;
+					$( '.hide-non-gradient-<?php echo esc_attr( $this->id ); ?>' ).toggle( values['is_gradient'] );
+					setSettings( values );
 				});
 
-				// Save updated gradient angle value.
-				$('#range-<?php echo esc_attr( $this->id ); ?>').change(function(event) {
-					saveSettings( $( '#first-color-<?php echo esc_attr( $this->id ); ?>' ).val() + ', ' + $( '#second-color-<?php echo esc_attr( $this->id ); ?>' ).val() + ', ' + $( '#gradient-color-picker-checkbox-<?php echo esc_attr( $this->id ); ?>' ).prop( 'checked' ) + ', ' + event.currentTarget.value );
+				// Set updated gradient angle value.
+				$( '#range-<?php echo esc_attr( $this->id ); ?>' ).change( function( event ) {
+					values['gradient_angle'] = parseInt( event.currentTarget.value );
+					setSettings( values );
 				});
 
 			} );

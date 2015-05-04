@@ -4,12 +4,12 @@
  * Custom setting data type, capable of auto-generating the CSS output for the color variants.
  *
  * Since quite some settings in the customizer are color-CSS related, we can abstract out that
- * in a way that we have a custom data type `CargoPress_Customize_Setting_Dynamic_CSS` which is capable
+ * in a way that we have a custom data type `ProteusThemes_Customize_Setting_Dynamic_CSS` which is capable
  * of dynamically generate the CSS out from the provided array `$css_map`.
  */
 
-if ( class_exists( 'WP_Customize_Setting' ) && ! class_exists( 'CargoPress_Customize_Setting_Dynamic_CSS' ) ) {
-	class CargoPress_Customize_Setting_Dynamic_CSS extends WP_Customize_Setting {
+if ( class_exists( 'WP_Customize_Setting' ) && ! class_exists( 'ProteusThemes_Customize_Setting_Dynamic_CSS' ) ) {
+	class ProteusThemes_Customize_Setting_Dynamic_CSS extends WP_Customize_Setting {
 		/**
 		 * 2D Array the CSS properties maped to the CSS selectors.
 		 * Each propery can have multiple selectors.

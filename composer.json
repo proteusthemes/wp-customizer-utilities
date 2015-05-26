@@ -1,7 +1,7 @@
 {
     "name": "proteusthemes/wp-customizer-utilities",
     "description": "Custom WordPress customizer controls and classes used in ProteusThemes",
-    "license": "GPLv2",
+    "license": "GPL-2.0+",
     "authors": [
         {
             "name": "Primoz Cigler",
@@ -11,5 +11,8 @@
             "name": "Gregor Capuder",
             "email": "gregor.capuder@proteusnet.com"
         }
-    ]
+    ],
+    "autoload": {
+        "classmap": ["./"]
+    }
 }

@@ -1,12 +1,14 @@
 <?php
 
+namespace ProteusThemes\CustomizerUtils\Control;
+
 /**
  * Gradient Control Class
  *
  * @package
  * @subpackage Customize
  */
-class WP_Customize_Gradient_Control extends WP_Customize_Control {
+class Gradient extends \WP_Customize_Control {
 
 	public $type = 'gradient-bg';
 

@@ -1,12 +1,14 @@
 <?php
 
+namespace ProteusThemes\CustomizerUtils\Control;
+
 /**
  * Range Control Class
  *
  * @package
  * @subpackage Customize
  */
-class WP_Customize_Range_Control extends WP_Customize_Control {
+class Range extends \WP_Customize_Control {
 	/**
 	 * @access public
 	 * @var string

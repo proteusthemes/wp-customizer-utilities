@@ -4,15 +4,17 @@
     "license": "GPL-2.0+",
     "authors": [
         {
-            "name": "Primoz Cigler",
+            "name":  "Primoz Cigler",
             "email": "primoz@proteusnet.com"
         },
         {
-            "name": "Gregor Capuder",
+            "name":  "Gregor Capuder",
             "email": "gregor.capuder@proteusnet.com"
         }
     ],
     "autoload": {
-        "classmap": ["./"]
+        "psr-4": {
+            "ProteusThemes\\CustomizerUtils\\": "src/"
+        }
     }
 }

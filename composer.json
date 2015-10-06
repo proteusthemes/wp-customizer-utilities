@@ -1,20 +1,21 @@
 {
-    "name": "proteusthemes/wp-customizer-utilities",
-    "description": "Custom WordPress customizer controls and classes used in ProteusThemes",
-    "license": "GPL-2.0+",
-    "authors": [
-        {
-            "name":  "Primoz Cigler",
-            "email": "primoz@proteusnet.com"
-        },
-        {
-            "name":  "Gregor Capuder",
-            "email": "gregor.capuder@proteusnet.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "ProteusThemes\\CustomizerUtils\\": "src/"
-        }
+  "name": "proteusthemes/wp-customizer-utilities",
+  "description": "Advanced WordPress customizer controls and settings for better user experience.",
+  "keywords": ["wp", "wordpress", "customizer", "proteusthemes", "theme", "control"],
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name":  "Primoz Cigler",
+      "email": "primoz@proteusnet.com"
+    },
+    {
+      "name":  "Gregor Capuder",
+      "email": "gregor.capuder@proteusnet.com"
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "ProteusThemes\\CustomizerUtils\\": "src/"
+    }
+  }
 }

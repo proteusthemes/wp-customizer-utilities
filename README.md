@@ -1,6 +1,6 @@
 # WP Customizer Utilities
 
-Custom WordPress customizer controls and settings for better using experience and for more advanced controls.
+Advanced WordPress customizer controls and settings for better user experience.
 
 ### Controls
 

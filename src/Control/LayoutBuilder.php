@@ -3,12 +3,12 @@
 namespace ProteusThemes\CustomizerUtils\Control;
 
 /**
- * Range Control Class
+ * LayoutBuilder Control Class
  *
  * @package
  * @subpackage Customize
  */
-class Range extends \WP_Customize_Control {
+class LayoutBuilder extends \WP_Customize_Control {
 	/**
 	 * @access public
 	 * @var string

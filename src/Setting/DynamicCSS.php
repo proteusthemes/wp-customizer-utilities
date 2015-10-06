@@ -180,26 +180,4 @@ class DynamicCSS extends \WP_Customize_Setting {
 	public static function is_filterable_string( $css_property ) {
 		return strpos( $css_property, self::FILTER_SEPARATOR ) > 0;
 	}
-
-	/**
-	 * Returns the RGB array from the hexdec color. Helper
-	 *
-	 * @param  string $hexdec CSS color
-	 * @return array
-	 */
-	protected static function rgb_from_hexdec( $hexdec ) {
-		$rgb = array();
-
-		// Extract the colors.
-		if ( ! preg_match( '/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i', $hexdec, $parts ) ) {
-			return false;
-		}
-
-		// Now we have red in $parts[1], green in $parts[2] and blue in $parts[3].
-		for ( $i = 0; $i < 3; $i++ ) {
-			$rgb[] = hexdec( $parts[ $i + 1 ] );
-		}
-
-		return $rgb;
-	}
 }

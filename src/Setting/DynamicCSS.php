@@ -59,6 +59,7 @@ class DynamicCSS extends \WP_Customize_Setting {
 	public function css_selector_groups_for_property( $css_property ) {
 		$selector_media_groups = array();
 
+
 		if ( array_key_exists( $css_property , $this->css_map ) ) {
 			// walk through the selectors and add them to the right group, based by appended media queries
 			foreach ( $this->css_map[ $css_property ] as $css_selector ) {
@@ -144,19 +145,22 @@ class DynamicCSS extends \WP_Customize_Setting {
 			if ( preg_match( '/^([a-z0-9\_]+)(?:\((\w+)\))?$/i', trim( $filter ), $matches ) ) {
 				switch ( $matches[1] ) {
 					case 'darken':
-						$out['value'] = $this->darken_css_color( $this->value(), (int) $matches[2] );
+						$darkerHex    = new \Mexitek\PHPColors\Color( $out['value'] );
+						$out['value'] = '#' . $darkerHex->darken( (int) $matches[2] );
 						break;
 					case 'lighten':
-						$out['value'] = $this->lighten_css_color( $this->value(), (int) $matches[2] );
+						$lighterHex   = new \Mexitek\PHPColors\Color( $out['value'] );
+						$out['value'] = '#' . $lighterHex->lighten( (int) $matches[2] );
 						break;
 					case 'important':
-						$out['value'] = $this->value() . ' !important';
+						$out['value'] .= ' !important';
 						break;
 					case 'url':
-						$out['value'] = sprintf( 'url("%s")', $this->value() );
+						$out['value'] = sprintf( 'url("%s")', $out['value'] );
 						break;
 					case 'linear_gradient_to_bottom':
-						$out['value'] = sprintf( '%1$s linear-gradient(to bottom, %1$s, %2$s)', $this->value(), $this->darken_css_color( $this->value(), (int) $matches[2] ) );
+						$secondColor = new \Mexitek\PHPColors\Color( $out['value'] );
+						$out['value'] = sprintf( '%1$s linear-gradient(to bottom, %1$s, #%2$s)', $this->value(), $secondColor->darken( (int) $matches[2] ) );
 						break;
 					default:
 						# already defined in first line of this func
@@ -175,62 +179,6 @@ class DynamicCSS extends \WP_Customize_Setting {
 	 */
 	public static function is_filterable_string( $css_property ) {
 		return strpos( $css_property, self::FILTER_SEPARATOR ) > 0;
-	}
-
-	/**
-	 * Calculate darker hexdec color variant. Helper.
-	 *
-	 * @see http://stackoverflow.com/questions/3512311/how-to-generate-lighter-darker-color-with-php
-	 * @param  string  $color
-	 * @param  integer $percent
-	 * @return string Hexdec color.
-	 */
-	protected static function darken_css_color( $color, $percent = 20 ) {
-		$alter_for = 2.55 * $percent;
-
-		$parts = self::rgb_from_hexdec( $color );
-
-		if ( false === $parts ) {
-			return '#000000';
-		}
-
-		$out = ''; // Prepare to fill with the results
-		for ( $i = 0; $i < 3; $i++ ) {
-			$parts[ $i ] = round( $parts[ $i ] - $alter_for );
-			$parts[ $i ] = max( $parts[ $i ], 0 );
-
-			// Now, we'll turn them back into hexadecimal and add them to our output string
-			$out .= str_pad( dechex( $parts[ $i ] ), 2, '0', STR_PAD_LEFT );
-		}
-		return '#' . $out;
-	}
-
-	/**
-	 * Calculate lighter hexdec color variant. Helper.
-	 *
-	 * @see http://stackoverflow.com/questions/3512311/how-to-generate-lighter-darker-color-with-php
-	 * @param  string  $color
-	 * @param  integer $percent
-	 * @return string Hexdec color.
-	 */
-	protected static function lighten_css_color( $color, $percent = 20 ) {
-		$alter_for = 2.55 * $percent;
-
-		$parts = self::rgb_from_hexdec( $color );
-
-		if ( false === $parts ) {
-			return '#ffffff';
-		}
-
-		$out = ''; // Prepare to fill with the results
-		for ( $i = 0; $i < 3; $i++ ) {
-			$parts[ $i ] = round( $parts[ $i ] + $alter_for );
-			$parts[ $i ] = min( $parts[ $i ], 255 );
-
-			// Now, we'll turn them back into hexadecimal and add them to our output string
-			$out .= str_pad( dechex( $parts[ $i ] ), 2, '0', STR_PAD_LEFT );
-		}
-		return '#' . $out;
 	}
 
 	/**

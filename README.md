@@ -40,7 +40,7 @@ Install it via [Composer](https://getcomposer.org/) and [Packagist](https://pack
 
   ##### Modifier Interface `ModInterface`
 
-  The modifer classes must implement the DynamicCSS\ModInterface. It has only one method `modify( $in )` which takes input value and returns the modified value.
+  The modifer classes must implement the `DynamicCSS\ModInterface`. It has only one method `modify( $in )` which takes input value and returns the modified value.
 
   Example:
 

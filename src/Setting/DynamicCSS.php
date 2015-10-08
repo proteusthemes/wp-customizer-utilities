@@ -6,14 +6,14 @@ namespace ProteusThemes\CustomizerUtils\Setting;
  * Custom setting data type, capable of auto-generating the CSS output for the color variants.
  *
  * Since quite some settings in the customizer are color-CSS related, we can abstract out that
- * in a way that we have a custom data type `ProteusThemes_Customize_Setting_Dynamic_CSS` which is capable
- * of dynamically generate the CSS out from the provided array `$css_props`.
+ * in a way that we have a custom data type which is capable to dynamically generate the CSS
+ * out from the provided array `$css_props`.
  */
 
 class DynamicCSS extends \WP_Customize_Setting {
 	/**
-	 * 2D Array the CSS properties maped to the CSS selectors.
-	 * Each propery can have multiple selectors.
+	 * CSS properties mapped to the CSS selectors.
+	 * Each propery can have multiple selectors, gruped in @media queries.
 	 *
 	 * @var array( // list of all css properties this setting controls
 	 * 	array( // each property in it's own array
@@ -69,7 +69,7 @@ class DynamicCSS extends \WP_Customize_Setting {
 	}
 
 	/**
-	 * Render the CSS for this setting.
+	 * Render the entire CSS for this setting.
 	 * @return string text/css
 	 */
 	public function render_css() {
@@ -100,9 +100,9 @@ class DynamicCSS extends \WP_Customize_Setting {
 
 	/**
 	 * Apply modifier to the untouched value.
-	 * @param  string $in       Setting value.
+	 * @param  string                           $in       Setting value.
 	 * @param  callable|DynamicCSS\ModInterface $modifier
-	 * @return string           Modified value.
+	 * @return string Modified value.
 	 */
 	private function apply_modifier( $in, $modifier ) {
 		$out = $in;

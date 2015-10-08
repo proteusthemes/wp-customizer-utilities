@@ -7,7 +7,7 @@ namespace ProteusThemes\CustomizerUtils\Setting;
  *
  * Since quite some settings in the customizer are color-CSS related, we can abstract out that
  * in a way that we have a custom data type `ProteusThemes_Customize_Setting_Dynamic_CSS` which is capable
- * of dynamically generate the CSS out from the provided array `$css_map`.
+ * of dynamically generate the CSS out from the provided array `$css_props`.
  */
 
 class DynamicCSS extends \WP_Customize_Setting {
@@ -15,17 +15,23 @@ class DynamicCSS extends \WP_Customize_Setting {
 	 * 2D Array the CSS properties maped to the CSS selectors.
 	 * Each propery can have multiple selectors.
 	 *
-	 * @var array {
-	 *   'color' => array( '.css-selector-1', '.css-selector-2' ),
-	 *   'background-color' => array( '.css-selector-2', '.css-selector-3' ),
-	 * }
+	 * @var array( // list of all css properties this setting controls
+	 * 	array( // each property in it's own array
+	 * 		'name'  => 'color',
+	 * 		'selectors' => array(
+	 * 			'noop' => array( // regular selectors
+	 * 				'.selector1',
+	 * 				'.selector2',
+	 * 			),
+	 * 			'@media (min-width: 900px)' => array( // selectors which should be in MQ
+	 * 				'.selector3',
+	 * 				'.selector4',
+	 * 			),
+	 * 		),
+	 * 		'modifier'  => $darker10, // separate data type
+	 * 	)
 	 */
-	public $css_map = array();
-
-	/**
-	 * Constant for supporting the filtering values in rendered CSS
-	 */
-	const FILTER_SEPARATOR = '|';
+	private $css_props = array();
 
 	/**
 	 * Default transport method for this setting type is 'postMessage'.
@@ -36,64 +42,30 @@ class DynamicCSS extends \WP_Customize_Setting {
 	public $transport = 'postMessage';
 
 	/**
-	 * Getter function for the $css_map class property.
+	 * Getter function for the raw $css_props property.
 	 * @return 2D array
 	 */
-	public function get_css_map() {
-		return $this->css_map;
+	public function get_css_props() {
+		return $this->css_props;
 	}
 
 	/**
-	 * Return all the CSS properties of the current setting.
+	 * Return all variants of the CSS propery with selectors.
+	 * Optionally filtered with the modifier.
+	 *
+	 * @param string $name     Name of the css propery, ie. color, background-color
+	 * @param string $modifier Optional modifier to further filter down the css props returned.
 	 * @return array
 	 */
-	public function get_all_css_properties() {
-		return array_keys( $this->get_css_map() );
-	}
-
-	/**
-	 * Generate the master CSS selector groups (by media queries) for a single CSS property of the setting. 2D array.
-	 * @param  string $css_property
-	 * @return array Each mq definition has its own group, the special one is general which does not have MQ
-	 */
-	public function css_selector_groups_for_property( $css_property ) {
-		$selector_media_groups = array();
-
-
-		if ( array_key_exists( $css_property , $this->css_map ) ) {
-			// walk through the selectors and add them to the right group, based by appended media queries
-			foreach ( $this->css_map[ $css_property ] as $css_selector ) {
-				if ( self::is_filterable_string( $css_selector ) ) {
-					// here were save in $css_selector and $media_query vars the actually useful numbers
-					list( $css_selector, $media_query )      = explode( self::FILTER_SEPARATOR, $css_selector );
-					$selector_media_groups[ $media_query ][] = $css_selector;
-				}
-				else {
-					// selector is not special, so we can save it in general group (no MQ) just as is
-					$selector_media_groups['general'][] = $css_selector;
-				}
+	public function get_single_css_prop( $name, $modifier = false ) {
+		return array_filter( $this->css_props, function ( $property ) {
+			if ( false !== $modifier ) {
+				return $name === $property['name'] && $modifier == $property['modifier'];
 			}
-		}
-
-		return $selector_media_groups;
-	}
-
-	/**
-	 * Return valid CSS selector for all groups (without MQ) returned by method css_selector_groups_for_property
-	 * @param  string $css_property
-	 * @return string valid CSS selector
-	 */
-	public function plain_selectors_for_all_groups( $css_property ) {
-		$selectors = array();
-		$all_groups = $this->css_selector_groups_for_property( $css_property );
-
-		foreach ( $all_groups as $group_selectors ) {
-			$selectors = array_merge( $selectors, $group_selectors );
-		}
-
-		$selectors = array_unique( $selectors );
-
-		return implode( ', ', $selectors );
+			else {
+				return $name === $property['name'];
+			}
+		} );
 	}
 
 	/**
@@ -103,18 +75,20 @@ class DynamicCSS extends \WP_Customize_Setting {
 	public function render_css() {
 		$out = '';
 
-		foreach ( $this->get_css_map() as $css_prop_raw => $css_selectors ) {
-			// we get here the $css_prop and $value
-			extract( $this->filter_css_property( $css_prop_raw ) );
+		foreach ( $this->css_props as $property ) {
+			foreach ( $property['selectors'] as $mq => $selectors ) {
+				$css_selectors = implode( ', ', $selectors );
+				$value         = $this->value();
 
-			foreach ( $this->css_selector_groups_for_property( $css_prop_raw ) as $media_query => $css_selectors_arr ) {
-				$css_selectors = implode( ', ', $css_selectors_arr );
+				if ( array_key_exists( 'modifier', $property ) ) {
+					$value = $this->apply_modifier( $value, $property['modifier'] );
+				}
 
-				if ( 'general' === $media_query ) { // essentially no media query
-					$out .= sprintf( '%1$s { %2$s: %3$s; }', $css_selectors, $css_prop, $value );
+				if ( 'noop' === $mq ) { // essentially no media query
+					$out .= sprintf( '%1$s { %2$s: %3$s; }', $css_selectors, $property['name'], $value );
 				}
 				else { // we have an actual media query
-					$out .= sprintf( '%4$s { %1$s { %2$s: %3$s; } }', $css_selectors, $css_prop, $value, $media_query );
+					$out .= sprintf( '%4$s { %1$s { %2$s: %3$s; } }', $css_selectors, $property['name'], $value, $mq );
 				}
 
 				$out .= PHP_EOL;
@@ -125,59 +99,21 @@ class DynamicCSS extends \WP_Customize_Setting {
 	}
 
 	/**
-	 * Detects if filter is needed and outut the associative array with prepared values.
-	 * @param  string $css_property might be filterable
-	 * @return array Keys must be `css_property` and `value`, with the values prepared to be directly used.
+	 * Apply modifier to the untouched value.
+	 * @param  string $in       Setting value.
+	 * @param  callable|DynamicCSS\ModInterface $modifier
+	 * @return string           Modified value.
 	 */
-	public function filter_css_property( $css_property ) {
-		// defaults
-		$out = array(
-			'css_prop' => $css_property,
-			'value'    => $this->value()
-		);
+	private function apply_modifier( $in, $modifier ) {
+		$out = $in;
 
-		if ( self::is_filterable_string( $css_property ) ) {
-			list( $css_property, $filter ) = explode( self::FILTER_SEPARATOR, $css_property );
-
-			$out['css_prop'] = trim( $css_property );
-
-			// for filters: lowercase characters, numbers and underscore _ allowed
-			if ( preg_match( '/^([a-z0-9\_]+)(?:\((\w+)\))?$/i', trim( $filter ), $matches ) ) {
-				switch ( $matches[1] ) {
-					case 'darken':
-						$darkerHex    = new \Mexitek\PHPColors\Color( $out['value'] );
-						$out['value'] = '#' . $darkerHex->darken( (int) $matches[2] );
-						break;
-					case 'lighten':
-						$lighterHex   = new \Mexitek\PHPColors\Color( $out['value'] );
-						$out['value'] = '#' . $lighterHex->lighten( (int) $matches[2] );
-						break;
-					case 'important':
-						$out['value'] .= ' !important';
-						break;
-					case 'url':
-						$out['value'] = sprintf( 'url("%s")', $out['value'] );
-						break;
-					case 'linear_gradient_to_bottom':
-						$secondColor = new \Mexitek\PHPColors\Color( $out['value'] );
-						$out['value'] = sprintf( '%1$s linear-gradient(to bottom, %1$s, #%2$s)', $this->value(), $secondColor->darken( (int) $matches[2] ) );
-						break;
-					default:
-						# already defined in first line of this func
-						break;
-				}
-			}
+		if ( $modifier instanceof DynamicCSS\ModInterface ) {
+			$out = $modifier->modify( $out );
+		}
+		else if ( is_callable( $modifier ) ) {
+			$out = call_user_func( $modifier, $out );
 		}
 
 		return $out;
-	}
-
-	/**
-	 * If the CSS property contains the defined FILTER_SEPARATOR and return true/false regarding this test
-	 * @param  string  $css_property
-	 * @return boolean
-	 */
-	public static function is_filterable_string( $css_property ) {
-		return strpos( $css_property, self::FILTER_SEPARATOR ) > 0;
 	}
 }

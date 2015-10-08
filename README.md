@@ -52,9 +52,9 @@ Install it via [Composer](https://getcomposer.org/) and [Packagist](https://pack
   }
   ```
 
-  #### Included modifiers
+  ##### Included modifiers
 
-  Some modifiers are already included with the package and you can use them stright away (depedency: [phpColor](https://github.com/mexitek/phpColors)).
+  Some modifiers are already included with the package and you can use them stright away.
 
   - `ModDarken( $amount )` - darken hexdec color for `$amount` (using [phpColors](https://github.com/mexitek/phpColors#available-methods))
   - `ModLighten( $amount )` - lighten hexdec color for `$amount` (using [phpColors](https://github.com/mexitek/phpColors#available-methods))
@@ -63,29 +63,32 @@ Install it via [Composer](https://getcomposer.org/) and [Packagist](https://pack
 
   ##### Use
 
-  Example of the code you would most likely attach to the action `add_action( 'customize_register', 'your_func' );`:
+  Example of the code you would most likely attach to the action ``:
 
   ```php
-  $darken5  = new \ProteusThemes\CustomizerUtils\Setting\DynamicCSS\ModDarken( 5 );
+  function your_func( $wp_customize ) {
+    $darken5  = new \ProteusThemes\CustomizerUtils\Setting\DynamicCSS\ModDarken( 5 );
 
-  $wp_customize->add_setting( new \ProteusThemes\CustomizerUtils\Setting\DynamicCSS( $wp_customize, 'nav_bg', array(
-    'default'   => '#bada55',
-    'css_props' => array( // list of all css properties this setting controls
-      array( // each property in it's own array
-        'name'      => 'background-color', // this is actual CSS property
-        'selectors' => array(
-          'noop' => array( // regular selectors in the key 'noop'
-            'body',
-            '.selector2',
+    $wp_customize->add_setting( new \ProteusThemes\CustomizerUtils\Setting\DynamicCSS( $wp_customize, 'nav_bg', array(
+      'default'   => '#bada55',
+      'css_props' => array( // list of all css properties this setting controls
+        array( // each property in it's own array
+          'name'      => 'background-color', // this is actual CSS property
+          'selectors' => array(
+            'noop' => array( // regular selectors in the key 'noop'
+              'body',
+              '.selector2',
+            ),
+            '@media (min-width: 900px)' => array( // selectors which should be in MQ
+              '.selector3',
+            ),
           ),
-          '@media (min-width: 900px)' => array( // selectors which should be in MQ
-            '.selector3',
-          ),
+          'modifier'  => $darken5, // optional. Separate data type, with the modify() method (via implemented interface) which takes value and returns modified value OR callable function with 1 argument
         ),
-        'modifier'  => $darken5, // optional. Separate data type, with the modify() method (via implemented interface) which takes value and returns modified value OR callable function with 1 argument
       ),
-    ),
-  ) ) );
+    ) ) );
+  }
+  add_action( 'customize_register', 'your_func' );
   ```
 
   You must also enqueue the JS file which handles the live preview changes via `postMessage`:

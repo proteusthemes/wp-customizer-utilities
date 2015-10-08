@@ -4,7 +4,13 @@ Advanced WordPress customizer controls and settings for better user experience.
 
 ## Installation
 
-Install it via [Composer](https://getcomposer.org/) and [Packagist](https://packagist.org/). Start using the classes and they will be autoloaded (PSR-4).
+Install it via [Composer](https://getcomposer.org/) and [Packagist](https://packagist.org/packages/proteusthemes/wp-customizer-utilities):
+
+```shell
+$ composer require proteusthemes/wp-customizer-utilities
+```
+
+Start using the classes and they will be autoloaded (PSR-4).
 
 ## Documentation
 

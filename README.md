@@ -1,4 +1,4 @@
-# WP Customizer Utilities by [ProteusThemes](https://www.proteusthemes.com/)
+# WP Customizer Utilities
 
 Advanced WordPress customizer controls and settings for better user experience.
 

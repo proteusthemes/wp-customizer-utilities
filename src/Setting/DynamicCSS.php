@@ -31,7 +31,7 @@ class DynamicCSS extends \WP_Customize_Setting {
 	 * 		'modifier'  => $darker10, // separate data type
 	 * 	)
 	 */
-	private $css_props = array();
+	public $css_props = array();
 
 	/**
 	 * Default transport method for this setting type is 'postMessage'.

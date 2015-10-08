@@ -6,15 +6,15 @@ namespace ProteusThemes\CustomizerUtils\Setting\DynamicCSS;
  * Returns darker shade of the color.
  */
 
-class ModDarker implements ModInterface {
+class ModDarken implements ModInterface {
 
-	private $darker;
+	private $darken;
 
 	/**
-	 * @param integer $darker Darker in percents.
+	 * @param integer $darken Darker in percents.
 	 */
-	public function __construct( $darker = 10 ) {
-		$this->darker = (int) $darker;
+	public function __construct( $darken = 10 ) {
+		$this->darken = (int) $darken;
 	}
 
 	/**
@@ -25,6 +25,6 @@ class ModDarker implements ModInterface {
 	public function modify( $in ) {
 		$color = new \Mexitek\PHPColors\Color( $in );
 
-		return '#' . $color->darken( $this->darker );
+		return '#' . $color->darken( $this->darken );
 	}
 }

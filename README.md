@@ -109,7 +109,7 @@ Start using the classes and they will be autoloaded (PSR-4).
       true
     );
 
-    wp_localize_script( 'structurepress-live-customize', 'ptCustomizerDynamicCSS', array(
+    wp_localize_script( 'mytheme-live-customize', 'ptCustomizerDynamicCSS', array(
       array(
         'settingID' => 'nav_bg',
         'selectors' => 'body, .selector1, .selector2',

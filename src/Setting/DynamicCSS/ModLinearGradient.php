@@ -30,8 +30,6 @@ class ModLinearGradient implements ModInterface {
 		$firstColor  = $in;
 		$secondColor = $this->modifier->modify( $in );
 
-		return '#' . $currentColor->darken( $this->darker );
-
-		return sprintf( '%2$s linear-gradient(%1$s, %2$s, #%3$s)', $this->orientation, $firstColor, $secondColor );
+		return sprintf( '%2$s linear-gradient(%1$s, %2$s, %3$s)', $this->orientation, $firstColor, $secondColor );
 	}
 }

@@ -73,10 +73,14 @@ class DynamicCSS extends \WP_Customize_Setting {
 	 * @return string text/css
 	 */
 	public function render_css() {
-		$out = '';
+		$out = array();
 
 		foreach ( $this->css_props as $property ) {
 			foreach ( $property['selectors'] as $mq => $selectors ) {
+				if ( empty( $selectors ) ) {
+					continue;
+				}
+
 				$css_selectors = implode( ', ', $selectors );
 				$value         = $this->value();
 
@@ -85,17 +89,16 @@ class DynamicCSS extends \WP_Customize_Setting {
 				}
 
 				if ( 'noop' === $mq ) { // essentially no media query
-					$out .= sprintf( '%1$s { %2$s: %3$s; }', $css_selectors, $property['name'], $value );
+					$out[] = sprintf( '%1$s { %2$s: %3$s; }', $css_selectors, $property['name'], $value );
 				}
 				else { // we have an actual media query
-					$out .= sprintf( '%4$s { %1$s { %2$s: %3$s; } }', $css_selectors, $property['name'], $value, $mq );
+					$out[] = sprintf( '%4$s { %1$s { %2$s: %3$s; } }', $css_selectors, $property['name'], $value, $mq );
 				}
 
-				$out .= PHP_EOL;
 			}
 		}
 
-		return $out;
+		return implode( PHP_EOL, $out );
 	}
 
 	/**

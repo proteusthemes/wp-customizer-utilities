@@ -77,6 +77,10 @@ class DynamicCSS extends \WP_Customize_Setting {
 
 		foreach ( $this->css_props as $property ) {
 			foreach ( $property['selectors'] as $mq => $selectors ) {
+				if ( empty( $selectors ) ) {
+					continue;
+				}
+
 				$css_selectors = implode( ', ', $selectors );
 				$value         = $this->value();
 

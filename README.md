@@ -69,7 +69,7 @@ Start using the classes and they will be autoloaded (PSR-4).
 
   ##### Use
 
-  Example of the code you would most likely attach to the action ``:
+  Example of the code you would most likely attach to the action `customize_register`:
 
   ```php
   function your_func( $wp_customize ) {

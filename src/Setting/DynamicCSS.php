@@ -42,6 +42,14 @@ class DynamicCSS extends \WP_Customize_Setting {
 	public $transport = 'postMessage';
 
 	/**
+	 * Active callback - should be CSS be printed out of not, depending on the context.
+	 *
+	 * @access protected
+	 * @var callable | null
+	 */
+	protected $active_callback = null;
+
+	/**
 	 * Getter function for the raw $css_props property.
 	 * @return 2D array
 	 */
@@ -83,6 +91,10 @@ class DynamicCSS extends \WP_Customize_Setting {
 
 				$css_selectors = implode( ', ', $selectors );
 				$value         = $this->value();
+
+				if ( is_callable( $this->active_callback ) && false === call_user_func( $this->active_callback, $value, $selectors, $mq ) ) {
+					continue;
+				}
 
 				if ( array_key_exists( 'modifier', $property ) ) {
 					$value = $this->apply_modifier( $value, $property['modifier'] );

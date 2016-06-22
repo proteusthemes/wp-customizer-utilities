@@ -22,6 +22,10 @@ class DynamicCSS extends \WP_Customize_Setting {
 	 * 			'noop' => array( // regular selectors
 	 * 				'.selector1',
 	 * 				'.selector2',
+	 * 				array( // indicates a new master selector (needed for example for '*::placeholder')
+	 * 					'.selector1',
+	 * 					'.selector2',
+	 * 				),
 	 * 			),
 	 * 			'@media (min-width: 900px)' => array( // selectors which should be in MQ
 	 * 				'.selector3',
@@ -89,8 +93,15 @@ class DynamicCSS extends \WP_Customize_Setting {
 					continue;
 				}
 
-				$css_selectors = implode( ', ', $selectors );
-				$value         = $this->value();
+				$main_selectors = array_filter( $selectors, function ( $selector ) {
+					return is_string( $selector );
+				} );
+
+				$all_selector_groups = array( $main_selectors ) + array_filter( $selectors, function ( $selector ) {
+					return is_array( $selector );
+				} );
+
+				$value = $this->value();
 
 				if ( is_callable( $this->active_callback ) && false === call_user_func( $this->active_callback, $value, $selectors, $mq ) ) {
 					continue;
@@ -100,13 +111,14 @@ class DynamicCSS extends \WP_Customize_Setting {
 					$value = $this->apply_modifier( $value, $property['modifier'] );
 				}
 
-				if ( 'noop' === $mq ) { // essentially no media query
-					$out[] = sprintf( '%1$s { %2$s: %3$s; }', $css_selectors, $property['name'], $value );
+				foreach ( $all_selector_groups as $selectors_group ) {
+					if ( 'noop' === $mq ) { // essentially no media query
+							$out[] = sprintf( '%1$s { %2$s: %3$s; }', implode( ', ', $selectors_group ), $property['name'], $value );
+						}
+					else { // we have an actual media query
+						$out[] = sprintf( '%4$s { %1$s { %2$s: %3$s; } }', implode( ', ', $selectors_group ), $property['name'], $value, $mq );
+					}
 				}
-				else { // we have an actual media query
-					$out[] = sprintf( '%4$s { %1$s { %2$s: %3$s; } }', $css_selectors, $property['name'], $value, $mq );
-				}
-
 			}
 		}
 

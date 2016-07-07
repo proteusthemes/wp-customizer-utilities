@@ -54,4 +54,34 @@ class Helpers {
 		$theme_mod_value = get_theme_mod( sanitize_key( $theme_mod_name ), $default );
 		return ! empty( $theme_mod_value );
 	}
+
+
+	/**
+	 * Get the dimensions of the logo image when the setting is saved.
+	 * This is purely a performance improvement.
+	 *
+	 * Used by hook: add_action( 'customize_save_logo_img', ..., 10, 1 );
+	 *
+	 * @return void
+	 */
+	public static function save_logo_dimensions( $setting, $theme_mod_name = 'logo_dimensions_array' ) {
+		$logo_width_height = array();
+		$img_data          = getimagesize( esc_url( $setting->post_value() ) );
+
+		if ( is_array( $img_data ) ) {
+			$logo_width_height = array_slice( $img_data, 0, 2 );
+			$logo_width_height = array_combine( array( 'width', 'height' ), $logo_width_height );
+		}
+
+		set_theme_mod( sanitize_key( $theme_mod_name ), $logo_width_height );
+	}
+
+
+	/**
+	 * Function that is hooked to wp_head and outputs only in customizer additional
+	 * <style> tag for DynamicCSS.
+	 */
+	public static function add_dynamic_css_style_tag() {
+		echo '<style id="wp-utils-dynamic-css-style-tag" type="text/css"></style>';
+	}
 }

@@ -36,8 +36,8 @@ class CacheManager {
 	 *
 	 * @return void
 	 */
-	public function cache_rendered_css() {
-		set_theme_mod( $this->theme_mod_name, $this->render_css() );
+	public function cache_rendered_css( $callable_selectors_filter = false ) {
+		set_theme_mod( $this->theme_mod_name, $this->render_css( $callable_selectors_filter ) );
 	}
 
 
@@ -46,9 +46,9 @@ class CacheManager {
 	 *
 	 * @return string text/css
 	 */
-	public function render_css() {
-		$out = array_map( function( $setting ) {
-			return $setting->render_css();
+	public function render_css( $callable_selectors_filter = false ) {
+		$out = array_map( function( $setting ) use ( $callable_selectors_filter ) {
+			return $setting->render_css( $callable_selectors_filter );
 		}, $this->get_dynamic_css_settings() );
 
 		$css_string = implode( PHP_EOL, $out );

@@ -84,7 +84,7 @@ class DynamicCSS extends \WP_Customize_Setting {
 	 * Render the entire CSS for this setting.
 	 * @return string text/css
 	 */
-	public function render_css() {
+	public function render_css( $callable_selectors_filter = false ) {
 		$out = array();
 
 		foreach ( $this->css_props as $property ) {
@@ -100,6 +100,12 @@ class DynamicCSS extends \WP_Customize_Setting {
 				$all_selector_groups = array( $main_selectors ) + array_filter( $selectors, function ( $selector ) {
 					return is_array( $selector );
 				} );
+
+				if ( is_callable( $callable_selectors_filter ) ) { // optionally filter out some selectors
+					foreach ( $all_selector_groups as $key => $inner_selectors ) {
+						$all_selector_groups[ $key ] = array_filter( $inner_selectors, $callable_selectors_filter );
+					}
+				}
 
 				$value = $this->value();
 

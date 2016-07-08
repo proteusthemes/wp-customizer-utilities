@@ -84,4 +84,14 @@ class Helpers {
 	public static function add_dynamic_css_style_tag() {
 		echo '<style id="wp-utils-dynamic-css-style-tag" type="text/css"></style>';
 	}
+
+
+	/**
+	 * Filter for the selectors that contain a plugin-specific selectors.
+	 *
+	 * @return boolean True if the $needle is not found in $css_selector
+	 */
+	public static function is_not_plugin_specific_css_selector( $css_selector, $needle = '.woocommerce' ) {
+		return false === strpos( $css_selector, $needle );
+	}
 }

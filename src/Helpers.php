@@ -87,11 +87,11 @@ class Helpers {
 
 
 	/**
-	 * Filter for the selectors that contain a plugin-specific selectors.
+	 * Filter for the selectors that contain a WooCommerce-specific selectors (most common case).
 	 *
-	 * @return boolean True if the $needle is not found in $css_selector
+	 * @return boolean
 	 */
-	public static function is_not_plugin_specific_css_selector( $css_selector, $needle = '.woocommerce' ) {
-		return false === strpos( $css_selector, $needle );
+	public static function is_not_woocommerce_css_selector( $css_selector ) {
+		return false === strpos( $css_selector, '.woocommerce' );
 	}
 }

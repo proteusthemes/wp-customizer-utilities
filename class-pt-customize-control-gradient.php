@@ -43,7 +43,7 @@ class WP_Customize_Gradient_Control extends WP_Customize_Control {
 
 		<p class="hide-non-gradient-<?php echo esc_attr( $this->id ); ?>">
 			<label>
-				<?php _e( 'Gradient angle: ', 'cargopress-pt' ) ?>
+				<?php esc_html_e( 'Gradient angle:' ); ?>
 				<div class="hide-non-gradient-<?php echo esc_attr( $this->id ); ?>" style="text-align: center;">
 					<!-- Range control for gradient angle -->
 					<input type="range" id="range-<?php echo esc_attr( $this->id ); ?>"  value="<?php echo esc_attr( $values['gradient_angle'] ); ?>" min="0" max="180" step="15" />
@@ -53,7 +53,7 @@ class WP_Customize_Gradient_Control extends WP_Customize_Control {
 		</span>
 		<p>
 			<label>
-				<?php _e( 'Use gradient: ', 'cargopress-pt' ) ?>
+				<?php esc_html_e( 'Use gradient:' ); ?>
 				<!-- Checkbox for enable/disable gradient or single color control -->
 				<input type="checkbox" id="gradient-checkbox-<?php echo esc_attr( $this->id ); ?>" <?php checked( $values['is_gradient'] ); ?> />
 			</label>

@@ -94,4 +94,19 @@ class Helpers {
 	public static function is_not_woocommerce_css_selector( $css_selector ) {
 		return false === strpos( $css_selector, '.woocommerce' );
 	}
+
+
+	/**
+	 * A wp_kses extension function - add script tag to the wp_kses allow tags.
+	 *
+	 * @param  string $data The string to be sanitized.
+	 * @return string       Sanitized string.
+	 */
+	public static function wp_kses_script( $data ) {
+		global $allowedposttags;
+		$allowedposttags_script = $allowedposttags;
+		$allowedposttags_script['script'] = array( 'type' => array (), 'src' => array () );
+
+		return wp_kses( $data, $allowedposttags_script );
+	}
 }

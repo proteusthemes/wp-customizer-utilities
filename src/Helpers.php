@@ -109,4 +109,16 @@ class Helpers {
 
 		return wp_kses( $data, $allowedposttags_script );
 	}
+
+	/**
+	 * A helper function to sanitize a boolean.
+	 * Used for the checkbox setting sanitization.
+	 *
+	 * @param boolean $input Input data.
+	 *
+	 * @return bool
+	 */
+	public static function sanitize_boolean( $input ) {
+		return ( isset( $input ) && true == $input );
+	}
 }

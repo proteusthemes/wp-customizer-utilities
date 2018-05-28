@@ -121,4 +121,20 @@ class Helpers {
 	public static function sanitize_boolean( $input ) {
 		return ( isset( $input ) && true == $input );
 	}
+
+
+	/**
+	 * Returns true if the theme mod value can be found in the passed array.
+	 *
+	 * @param string $theme_mod_name The theme mod name/key, to retrieve the value from.
+	 * @param array  $values         The array of values, the theme mod value should be tested against.
+	 * @param string $default        The default value of the theme mod, if the theme mod does not exists.
+	 *
+	 * @return boolean
+	 */
+	public static function is_theme_mod_in_array( $theme_mod_name, $values = array(), $default = 'default' ) {
+		$theme_mod_value = get_theme_mod( sanitize_key( $theme_mod_name ), $default );
+
+		return in_array( $theme_mod_value, $values, true );
+	}
 }

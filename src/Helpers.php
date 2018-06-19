@@ -137,4 +137,40 @@ class Helpers {
 
 		return in_array( $theme_mod_value, $values, true );
 	}
+
+
+	/**
+	 * Processes and alters the arguments to create DynamicCSS when theme supports multiple skins.
+	 *
+	 * @param array $args Arguments to be passed to DynamicCSS setting.
+	 * @param string $selected_skin Currently selected theme skin.
+	 *
+	 * @return array Modified array.
+	 */
+	public static function process_multiskin_args( $args, $selected_skin = 'default' ) {
+		self::maybe_mutate_args( 'default', $args, $selected_skin );
+		self::maybe_mutate_args( 'css_props', $args, $selected_skin );
+
+		return $args;
+	}
+
+
+	/**
+	 * Checks and changes values in $args according to skin.
+	 *
+	 * @param string $key_to_check Key in the $args for checking and potentially mutating.
+	 * @param array $args Arguments to be passed to DynamicCSS setting.
+	 * @param string $selected_skin Currently selected theme skin.
+	 *
+	 * @return void Mutates $args.
+	 */
+	protected static function maybe_mutate_args( $key_to_check, &$args, $selected_skin = 'default' ) {
+		if (
+			array_key_exists( $key_to_check, $args ) &&
+			is_array( $args[ $key_to_check ] ) &&
+			array_key_exists( $selected_skin, $args[ $key_to_check ] )
+		) {
+			$args[ $key_to_check ] = $args[ $key_to_check ][ $selected_skin ];
+		}
+	}
 }

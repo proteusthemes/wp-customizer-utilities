@@ -88,6 +88,11 @@ class DynamicCSS extends \WP_Customize_Setting {
 		$out = array();
 
 		foreach ( $this->css_props as $property ) {
+
+			if ( ! ( array_key_exists( 'selectors', $property ) && is_array( $property['selectors'] ) ) ) {
+				continue;
+			}
+
 			foreach ( $property['selectors'] as $mq => $selectors ) {
 				if ( empty( $selectors ) ) {
 					continue;

@@ -2,6 +2,10 @@
 
 Advanced WordPress customizer controls and settings for better user experience.
 
+## Requirements
+
+Requires PHP version 7.2.0 or greater.
+
 ## Installation
 
 Install it via [Composer](https://getcomposer.org/) and [Packagist](https://packagist.org/packages/proteusthemes/wp-customizer-utilities):

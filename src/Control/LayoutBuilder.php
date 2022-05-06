@@ -40,7 +40,7 @@ class LayoutBuilder extends \WP_Customize_Control {
 		$ui = $wp_scripts->query( 'jquery-ui-core' );
 
 		// tell WordPress to load the jQuery UI CSS from cloudflare CDN
-		wp_enqueue_style( 'jquery-ui-core', sprintf( '//cdnjs.cloudflare.com/ajax/libs/jqueryui/%s/jquery-ui.min.css', $ui->ver ), false, null );
+		wp_enqueue_style( 'jquery-ui-core', get_template_directory_uri() . '/vendor/proteusthemes/wp-customizer-utilities/assets/jquery-ui.min.css', false, null );
 	}
 
 	/**

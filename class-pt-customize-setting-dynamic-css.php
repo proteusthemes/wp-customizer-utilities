@@ -105,6 +105,10 @@ if ( class_exists( 'WP_Customize_Setting' ) && ! class_exists( 'ProteusThemes_Cu
 				// we get here the $css_prop and $value
 				extract( $this->filter_css_property( $css_prop_raw ) );
 
+				if ( '' === $value ) {
+					continue;
+				}
+
 				foreach ( $this->css_selector_groups_for_property( $css_prop_raw ) as $media_query => $css_selectors_arr ) {
 					$css_selectors = implode( ', ', $css_selectors_arr );
 
@@ -155,7 +159,8 @@ if ( class_exists( 'WP_Customize_Setting' ) && ! class_exists( 'ProteusThemes_Cu
 							$out['value'] = sprintf( 'url("%s")', $this->value() );
 							break;
 						case 'linear_gradient_to_bottom':
-							$out['value'] = sprintf( '%1$s linear-gradient(to bottom, %1$s, %2$s)', $this->value(), $this->darken_css_color( $this->value(), (int) $matches[2] ) );
+							$darker_color = $this->darken_css_color( $this->value(), (int) $matches[2] );
+							$out['value'] = '' === $darker_color ? '' : sprintf( '%1$s linear-gradient(to bottom, %1$s, %2$s)', $this->value(), $darker_color );
 							break;
 						default:
 							# already defined in first line of this func
@@ -182,7 +187,7 @@ if ( class_exists( 'WP_Customize_Setting' ) && ! class_exists( 'ProteusThemes_Cu
 		 * @see http://stackoverflow.com/questions/3512311/how-to-generate-lighter-darker-color-with-php
 		 * @param  string  $color
 		 * @param  integer $percent
-		 * @return string Hexdec color.
+		 * @return string Hexdec color, or an empty string if $color is not a hex color.
 		 */
 		protected static function darken_css_color( $color, $percent = 20 ) {
 			$alter_for = 2.55 * $percent;
@@ -190,7 +195,7 @@ if ( class_exists( 'WP_Customize_Setting' ) && ! class_exists( 'ProteusThemes_Cu
 			$parts = self::rgb_from_hexdec( $color );
 
 			if ( false === $parts ) {
-				return '#000000';
+				return '';
 			}
 
 			$out = ''; // Prepare to fill with the results
@@ -210,7 +215,7 @@ if ( class_exists( 'WP_Customize_Setting' ) && ! class_exists( 'ProteusThemes_Cu
 		 * @see http://stackoverflow.com/questions/3512311/how-to-generate-lighter-darker-color-with-php
 		 * @param  string  $color
 		 * @param  integer $percent
-		 * @return string Hexdec color.
+		 * @return string Hexdec color, or an empty string if $color is not a hex color.
 		 */
 		protected static function lighten_css_color( $color, $percent = 20 ) {
 			$alter_for = 2.55 * $percent;
@@ -218,7 +223,7 @@ if ( class_exists( 'WP_Customize_Setting' ) && ! class_exists( 'ProteusThemes_Cu
 			$parts = self::rgb_from_hexdec( $color );
 
 			if ( false === $parts ) {
-				return '#ffffff';
+				return '';
 			}
 
 			$out = ''; // Prepare to fill with the results
@@ -240,6 +245,10 @@ if ( class_exists( 'WP_Customize_Setting' ) && ! class_exists( 'ProteusThemes_Cu
 		 */
 		protected static function rgb_from_hexdec( $hexdec ) {
 			$rgb = array();
+
+			if ( preg_match( '/^#?[0-9a-f]{3}$/i', $hexdec ) ) {
+				$hexdec = preg_replace( '/[0-9a-f]/i', '$0$0', $hexdec );
+			}
 
 			// Extract the colors.
 			if ( ! preg_match( '/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i', $hexdec, $parts ) ) {

@@ -66,7 +66,8 @@ class Helpers {
 	 */
 	public static function save_logo_dimensions( $setting, $theme_mod_name = 'logo_dimensions_array' ) {
 		$logo_width_height = array();
-		$img_data          = getimagesize( esc_url( $setting->post_value() ) );
+		$logo_url          = esc_url_raw( (string) $setting->post_value() );
+		$img_data          = '' === $logo_url ? false : getimagesize( $logo_url );
 
 		if ( is_array( $img_data ) ) {
 			$logo_width_height = array_slice( $img_data, 0, 2 );

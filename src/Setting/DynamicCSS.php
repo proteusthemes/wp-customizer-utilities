@@ -122,6 +122,10 @@ class DynamicCSS extends \WP_Customize_Setting {
 					$value = $this->apply_modifier( $value, $property['modifier'] );
 				}
 
+				if ( null === $value || false === $value || '' === $value ) {
+					continue;
+				}
+
 				foreach ( $all_selector_groups as $selectors_group ) {
 					if ( 'noop' === $mq ) { // essentially no media query
 							$out[] = sprintf( '%1$s { %2$s: %3$s; }', implode( ', ', $selectors_group ), $property['name'], $value );

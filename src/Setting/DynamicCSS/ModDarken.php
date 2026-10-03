@@ -23,6 +23,10 @@ class ModDarken implements ModInterface {
 	 * @return string     hex-dex darker variant
 	 */
 	public function modify( $in ) {
+		if ( ! \ProteusThemes\CustomizerUtils\Helpers::is_hex_color( $in ) ) {
+			return '';
+		}
+
 		$color = new \Mexitek\PHPColors\Color( $in );
 
 		return '#' . $color->darken( $this->darken );

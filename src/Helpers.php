@@ -125,6 +125,18 @@ class Helpers {
 
 
 	/**
+	 * Returns true if the value is a 3 or 6 digit hex color, with or without the leading #.
+	 *
+	 * @param mixed $color Value to test.
+	 *
+	 * @return boolean
+	 */
+	public static function is_hex_color( $color ) {
+		return is_string( $color ) && 1 === preg_match( '/^#?(?:[0-9a-f]{3}){1,2}\z/i', $color );
+	}
+
+
+	/**
 	 * Returns true if the theme mod value can be found in the passed array.
 	 *
 	 * @param string $theme_mod_name The theme mod name/key, to retrieve the value from.

@@ -23,6 +23,10 @@ class ModLighten implements ModInterface {
 	 * @return string     hex-dex lighter variant
 	 */
 	public function modify( $in ) {
+		if ( ! \ProteusThemes\CustomizerUtils\Helpers::is_hex_color( $in ) ) {
+			return '';
+		}
+
 		$color = new \Mexitek\PHPColors\Color( $in );
 
 		return '#' . $color->lighten( $this->lighten );

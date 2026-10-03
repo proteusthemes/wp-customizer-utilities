@@ -66,7 +66,8 @@ class Helpers {
 	 */
 	public static function save_logo_dimensions( $setting, $theme_mod_name = 'logo_dimensions_array' ) {
 		$logo_width_height = array();
-		$img_data          = getimagesize( esc_url( $setting->post_value() ) );
+		$logo_url          = esc_url_raw( (string) $setting->post_value() );
+		$img_data          = '' === $logo_url ? false : getimagesize( $logo_url );
 
 		if ( is_array( $img_data ) ) {
 			$logo_width_height = array_slice( $img_data, 0, 2 );
@@ -120,6 +121,18 @@ class Helpers {
 	 */
 	public static function sanitize_boolean( $input ) {
 		return ( isset( $input ) && true == $input );
+	}
+
+
+	/**
+	 * Returns true if the value is a 3 or 6 digit hex color, with or without the leading #.
+	 *
+	 * @param mixed $color Value to test.
+	 *
+	 * @return boolean
+	 */
+	public static function is_hex_color( $color ) {
+		return is_string( $color ) && 1 === preg_match( '/^#?(?:[0-9a-f]{3}){1,2}\z/i', $color );
 	}
 
 

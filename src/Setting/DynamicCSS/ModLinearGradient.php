@@ -38,6 +38,10 @@ class ModLinearGradient implements ModInterface {
 			$firstColor = $this->first_modifier->modify( $in );
 		}
 
+		if ( '' === $firstColor || '' === $secondColor ) {
+			return '';
+		}
+
 		return sprintf( '%2$s linear-gradient(%1$s, %2$s, %3$s)', $this->orientation, $firstColor, $secondColor );
 	}
 }

@@ -19,7 +19,7 @@ class ModLinearGradient implements ModInterface {
 	 * @param string       $orientation    Orientation in the string notation or in degrees (needs css unit in this case as well).
 	 * @param ModInterface $first_modifier Instance which modifies the 1st parameter, which is optional.
 	 */
-	public function __construct( ModInterface $modifier, $orientation = 'to bottom', ModInterface $first_modifier = null ) {
+	public function __construct( ModInterface $modifier, $orientation = 'to bottom', ?ModInterface $first_modifier = null ) {
 		$this->modifier       = $modifier;
 		$this->orientation    = $orientation;
 		$this->first_modifier = $first_modifier;

@@ -49,8 +49,6 @@ class LayoutBuilder extends \WP_Customize_Control {
 	 * @since 3.4.0
 	 */
 	public function render_content() {
-		$val = esc_attr( $this->value() );
-
 		$attrs = shortcode_atts( array(
 			'min'     => 1,
 			'max'     => 12,
@@ -58,7 +56,18 @@ class LayoutBuilder extends \WP_Customize_Control {
 			'maxCols' => 6,
 		), $this->input_attrs );
 
-		$widgets_num = sizeof( explode( ',', $val ) ) + 1;
+		$decoded  = json_decode( (string) $this->value(), true );
+		$dividers = array();
+
+		if ( is_array( $decoded ) && ! empty( $decoded ) ) {
+			$dividers    = array_values( array_map( 'intval', $decoded ) );
+			$widgets_num = count( $dividers ) + 1;
+		} elseif ( 1 === $decoded ) {
+			$widgets_num = 1;
+		} else {
+			$widgets_num = 0;
+		}
+
 		$widgets_num = min( intval( $attrs['maxCols'] ), $widgets_num );
 
 		?>
@@ -101,7 +110,9 @@ class LayoutBuilder extends \WP_Customize_Control {
 						}
 					} );
 				};
-				setSlider( <?php echo esc_js( $val ); ?> );
+				<?php if ( ! empty( $dividers ) ) : ?>
+					setSlider( <?php echo wp_json_encode( $dividers ); ?> );
+				<?php endif; ?>
 
 				var distributeDividers = function ( numberCols, minCols, maxCols ) {
 					var out = [],
